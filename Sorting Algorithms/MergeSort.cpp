@@ -4,11 +4,12 @@
 #include <cmath>
 
 /**
- * @brief Generic InsertionSort implementation with Templates
+ * @brief Generic MergeSort implementation with Templates
  * 
  * @tparam T Type of elements to be sorted
  * @param array Array to be sorted
- * @param size Number of elements in the array
+ * @param left First index of array
+ * @param right Last index of array
  * @param compare Custom comparison function (defaults to greater than)
  * @return true if the array was sorted, false if not sorted
  */
