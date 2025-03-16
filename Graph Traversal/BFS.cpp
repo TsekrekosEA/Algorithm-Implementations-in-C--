@@ -3,34 +3,43 @@
 #include <vector>
 #include <limits>
 #include <algorithm>
+#include <queue>
 
 // Define the graph as an adjacency list
 using Graph = std::unordered_map<int, std::vector<std::pair<int, int>>>;
 
 bool visited[1000];
 std::unordered_map<int, int> parent; // Parent map to reconstruct the path
+std::queue<std::pair<int, int>> nodes;
 
+void BFS(const Graph& graph, int startNode, int targetNode, bool& found){
 
-void DFS(const Graph& graph, int startNode, int targetNode, bool& found){
-
+    // Clear queue and reset visited
+    while (!nodes.empty()) nodes.pop();
+    for (int i = 0; i < 1000; i++) visited[i] = false;
+    
+    nodes.push({startNode, 0}); // node, cost
     visited[startNode] = true;
 
-    if (startNode == targetNode) {
-        found = true;
-        return;
-    }
+    while (!nodes.empty() && !found) {
+        std::pair<int,int> node = nodes.front();
+        nodes.pop();
+        
 
-    for (auto neighbor : graph.at(startNode)) {
-        if (!visited[neighbor.first]) {
-            // Set parent relationship
-            parent[neighbor.first] = startNode;
-            
-            std::cout << "Exploring Node " << neighbor.first << " With cost of: " << neighbor.second << std::endl;
-            
-            DFS(graph, neighbor.first, targetNode, found);
-            
-            if (found) return; // Stop exploring if target is found
+        if (node.first == targetNode) {
+            found = true;
+            break;
         }
+
+        for (auto& neighbor : graph.at(node.first)) {
+            if (!visited[neighbor.first]) {
+                visited[neighbor.first] = true;
+                parent[neighbor.first] = node.first;
+                nodes.push(neighbor);
+                std::cout << "Exploring Node " << neighbor.first << " With cost of: " << neighbor.second << std::endl;
+            }
+        }
+
     }
 }
 
@@ -61,7 +70,7 @@ int main(){
     graph[0] = {{1,3},{2,2}};
     graph[1] = {{4,5}};
     graph[2] = {{3,2}};
-    graph[3] = {{4,3},{5,6}};
+    graph[3] = {{4,3},{5,7}};
     graph[4] = {{5,2}};
     graph[5] = {};
 
@@ -70,15 +79,12 @@ int main(){
     int targetNode = 5;
     bool found = false;
 
-    // Reset visited array
-    for (int i = 0; i < 1000; i++) {
-        visited[i] = false;
-    }
+
     // Clear parent map
     parent.clear();
     parent[startNode] = -1;
 
-    DFS(graph,startNode,targetNode,found);
+    BFS(graph,startNode,targetNode,found);
 
     std::vector<int> path = reconstructPath(startNode, targetNode);
     
